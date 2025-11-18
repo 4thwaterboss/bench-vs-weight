@@ -30,7 +30,7 @@
 <body>
   <main class="card" role="main">
     <h1>Bench vs Bodyweight</h1>
-    <p class="lead">Enter your bodyweight and best bench press. If your bench is above your bodyweight it will celebrate you — otherwise it will give blunt feedback.</p>
+    <p class="lead">Enter your bodyweight and the heaviest bench press you push. I will either celebrate you or give honest advice.</p>
 
     <form id="benchForm" autocomplete="off">
       <div class="controls">
@@ -96,9 +96,9 @@
 
       // compare strictly > (above) vs <= (under or equal)
       if (bench > bodyweight) {
-        showResult('Good job!', 'success');
+        showResult('Woah you are better most people', 'success');
       } else {
-        showResult('Give up now', 'danger');
+        showResult('Give up now');
       }
     });
 
