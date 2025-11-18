@@ -1,104 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Bench vs Bodyweight</title>
-<style>
-:root{--bg:#0f172a;--card:#0b1220;--accent:#7dd3fc;--muted:#94a3b8;--success:#10b981;--danger:#ef4444}
-*{box-sizing:border-box}
-body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;min-height:100vh;margin:0;background:linear-gradient(180deg,var(--bg),#020617);color:#e6eef6;display:flex;align-items:center;justify-content:center;padding:32px}
-.card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:24px;width:100%;max-width:520px;box-shadow:0 6px 24px rgba(2,6,23,0.6)}
-h1{margin:0 0 8px;font-size:20px}
-p.lead{margin:0 0 20px;color:var(--muted)}
-label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-.row{display:flex;gap:12px}
-input[type=number],select{width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:15px}
-.controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
-button{background:var(--accent);border:0;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer}
-button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--accent)}
-.result{margin-top:14px;padding:14px;border-radius:10px;font-weight:700;text-align:center}
-.result.success{background:linear-gradient(90deg,rgba(16,185,129,0.12),rgba(16,185,129,0.06));color:var(--success);border:1px solid rgba(16,185,129,0.12)}
-.result.danger{background:linear-gradient(90deg,rgba(239,68,68,0.08),rgba(239,68,68,0.04));color:var(--danger);border:1px solid rgba(239,68,68,0.08)}
-footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
-.small{font-size:13px;color:var(--muted)}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bench vs Bodyweight</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #0b1220;
+      --accent: #7dd3fc;
+      --muted: #94a3b8;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(180deg, var(--bg), #020617);
+      color: #e6eef6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 12px;
+      padding: 24px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 6px 24px rgba(2,6,23,0.6);
+    }
+    h1 { margin: 0 0 8px; font-size: 20px; }
+    p.lead { margin: 0 0 20px; color: var(--muted); }
+    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+    .row { display: flex; gap: 12px; }
+    input[type=number], select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.04);
+      background: transparent;
+      color: inherit;
+      font-size: 15px;
+    }
+    .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    button {
+      background: var(--accent);
+      border: 0;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      text-align: center;
+    }
+    .result.success {
+      background: linear-gradient(90deg, rgba(16,185,129,0.12), rgba(16,185,129,0.06));
+      color: var(--success);
+      border: 1px solid rgba(16,185,129,0.12);
+    }
+    .result.danger {
+      background: linear-gradient(90deg, rgba(239,68,68,0.08), rgba(239,68,68,0.04));
+      color: var(--danger);
+      border: 1px solid rgba(239,68,68,0.08);
+    }
+    .small { font-size: 13px; color: var(--muted); }
+    canvas { margin-top: 20px; }
+  </style>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<main class="card" role="main">
-<h1>Bench vs Bodyweight</h1>
-<p class="lead">Enter your bodyweight and heaviest bench press. If your bench is above your bodyweight I will celebrate you — otherwise I'll give good advice.</p>
+  <main class="card" role="main">
+    <h1>Bench vs Bodyweight</h1>
+    <p class="lead">Enter your bodyweight and heaviest bench press. If your bench is above your bodyweight, I will celebrate you — otherwise I'll give honest advice.</p>
 
+    <form id="benchForm" autocomplete="off">
+      <div class="controls">
+        <div>
+          <label for="bodyweight">Bodyweight</label>
+          <input id="bodyweight" type="number" step="0.1" min="1" placeholder="e.g. 80" required>
+        </div>
+        <div>
+          <label for="bench">Bench Press</label>
+          <input id="bench" type="number" step="0.5" min="0" placeholder="e.g. 90" required>
+        </div>
+      </div>
 
-<form id="benchForm" autocomplete="off">
-<div class="controls">
-<div>
-<label for="bodyweight">Bodyweight</label>
-<input id="bodyweight" name="bodyweight" type="number" step="0.1" min="1" placeholder="e.g. 80" required />
-</div>
+      <div class="row" style="margin-bottom:12px">
+        <div style="flex:1">
+          <label for="units">Units</label>
+          <select id="units">
+            <option value="kg">kg</option>
+            <option value="lb">lb</option>
+          </select>
+        </div>
+        <div style="flex:1">
+          <label style="visibility:hidden">spacer</label>
+          <button type="submit">Check</button>
+        </div>
+      </div>
+    </form>
 
+    <div id="result" class="result small" aria-live="polite">
+      Enter values above and press <strong>Check</strong>.
+    </div>
 
-<div>
-<label for="bench">Bench press</label>
-<input id="bench" name="bench" type="number" step="0.5" min="0" placeholder="e.g. 90" required />
-</div>
-</div>
+    <div id="stats" class="small">No entries yet.</div>
 
+    <canvas id="pieChart" width="300" height="300"></canvas>
 
-<div class="row" style="margin-bottom:12px">
-<div style="flex:1">
-<label for="units">Units</label>
-<select id="units" name="units">
-<option value="kg">kg</option>
-<option value="lb">lb</option>
-</select>
-</div>
+    <footer class="small" style="margin-top:18px;">
+      Tip: press <strong>Shift + Enter</strong> in console to add a new line when testing.
+    </footer>
+  </main>
 
+  <script>
+    const form = document.getElementById('benchForm');
+    const resultEl = document.getElementById('result');
+    const statsEl = document.getElementById('stats');
 
-<div style="flex:1">
-<label style="visibility:hidden">spacer</label>
-<button id="checkBtn" type="submit">Check</button>
-</div>
-</div>
-</form>
+    let successCount = 0;
+    let failureCount = 0;
 
+    // Initialize pie chart
+    const ctx = document.getElementById('pieChart').getContext('2d');
+    const pieChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Success', 'Failure'],
+        datasets: [{
+          data: [successCount, failureCount],
+          backgroundColor: ['#10b981', '#ef4444']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+      }
+    });
 
-<div id="result" class="result small" aria-live="polite">Enter values above and press <strong>Check</strong>.</div>
-<div id="stats" class="small">No entries yet.</div>
+    function showResult(text, type) {
+      resultEl.textContent = text;
+      resultEl.className = 'result ' + (type === 'success' ? 'success' : 'danger');
+    }
 
+    function updateStats() {
+      const total = successCount + failureCount;
+      if (total === 0) {
+        statsEl.textContent = 'No entries yet.';
+      } else {
+        const successPercent = ((successCount / total) * 100).toFixed(1);
+        const failurePercent = ((failureCount / total) * 100).toFixed(1);
+        statsEl.textContent = `Success: ${successPercent}% | Failure: ${failurePercent}%`;
+      }
 
-<footer>
-Tip: press <strong>Shift + Enter</strong> to add a new line in the browser console when testing.
-</footer>
-</main>
+      pieChart.data.datasets[0].data = [successCount, failureCount];
+      pieChart.update();
+    }
 
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
 
-<script>
-const form = document.getElementById('benchForm');
-const resultEl = document.getElementById('result');
-const statsEl = document.getElementById('stats');
+      const bodyweight = parseFloat(document.getElementById('bodyweight').value);
+      const bench = parseFloat(document.getElementById('bench').value);
 
+      if (isNaN(bodyweight) || isNaN(bench) || bodyweight <= 0) {
+        showResult('Please enter valid numbers.', 'danger');
+        return;
+      }
 
-let successCount = 0;
-let failureCount = 0;
+      if (bench > bodyweight) {
+        successCount++;
+        showResult('Woah you are better than most people!', 'success');
+      } else {
+        failureCount++;
+        showResult('Give up now', 'danger');
+      }
 
-
-form.addEventListener('submit', (e) => {
-e.preventDefault();
-
-
-const bwRaw = document.getElementById('bodyweight').value;
-const benchRaw = document.getElementById('bench').value;
-
-
-const bodyweight = parseFloat(bwRaw);
-const bench = parseFloat(benchRaw);
-
-
-if (Number.isNaN(bodyweight) || Number.isNaN(bench)) {
-showResult('Please enter valid numbers for both fields.', 'danger');
-return;
-}
-
-
-if (bodyweight <= 0) {
+      updateStats();
+    });
+  </script>
+</body>
+</html>
